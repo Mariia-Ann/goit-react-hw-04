@@ -1,0 +1,46 @@
+.form {
+    width: 350px;
+border: 1.5px solid #3B2D4D;
+border-radius: 10px;
+padding: 20px 15px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+margin: 20px 0;
+}
+.label {
+    display: flex;
+    flex-direction: column;
+}
+.field{
+    color: #3B2D4D;
+padding: 5px 10px;
+border: 1px solid #3B2D4D;
+border-radius: 4px;
+outline: none;
+transition: border-color 0.3s ease-in-out;
+}
+.field:hover,
+.field:focus,
+.field:active {
+border: 1px solid #7d3f79;
+}
+
+.error{
+    margin-top: 3px;
+    font-size: 10px;
+    color: #dd2828;
+}
+.btnForm {
+    padding: 10px 30px;
+    margin: 0 auto;
+    border-radius: 10px;
+    border: none;
+    background-color: #7d3f79;
+    color: #F7F3F9;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.btnForm:hover {
+    background-color: #6B3F7D;
+}

@@ -1,0 +1,29 @@
+.contact {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.text {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.btnDelete {
+  height: 40px;
+  padding: 0 30px;
+  border-radius: 10px;
+  border: none;
+  background-color: #7d3f79;
+  color: #f7f3f9;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.btnDelete:hover {
+    background-color: #6B3F7D;
+}

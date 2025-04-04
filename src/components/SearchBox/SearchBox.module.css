@@ -1,0 +1,19 @@
+.search {
+  margin-bottom: 20px;
+}
+
+.input {
+  width: 350px;
+  color: #3b2d4d;
+  padding: 5px 10px;
+  border: 1px solid #3b2d4d;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.input:hover,
+.input:focus,
+.input:active {
+  border: 1px solid #7d3f79;
+}
