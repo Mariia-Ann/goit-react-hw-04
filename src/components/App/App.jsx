@@ -2,14 +2,13 @@ import style from "./App.module.css";
 
 import { fetchImagesWithTopic } from "../../images-api";
 import { useEffect, useRef, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import Loader from "../Loader/Loader";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import SearchBar from "../SearchBar/SearchBar";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import ImageModal from "../ImageModal/ImageModal";
-
-
 
 const App = () => {
   const [images, setImages] = useState([]);
@@ -19,92 +18,99 @@ const App = () => {
   const [topic, setTopic] = useState("");
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalImageUrl, setModalImageUrl] = useState("");
-  const [modalDescription, setModalDescription] = useState("");
+  const [modalImage, setModalImage] = useState(null);
 
-  const loadMoreBtnRef = useRef(null);
+  const galleryRef = useRef(null);
 
-const handleSearch = async (newTopic) => {
-  setTopic(newTopic);
-  setPage(1);
-  setImages([]);
-  setError(false);
-  setLoading(true);
-try {
-  const data = await fetchImagesWithTopic(newTopic, 1);
-  setImages(data.images);
-  setLoadMore(data.loadMore);
-} catch (error) {
-  setError(true);
-} finally {
-  setLoading(false);
-}
-};
-
-const loadMoreImages = async () => {
-  if(!loadMore) return;
-
-  setLoading(true);
-  try {
-    const nextPage = page + 1;
-    const data = await fetchImagesWithTopic(topic, nextPage);
-    setImages((prevImages) => 
-    [...prevImages, ...data.images]);
-    setLoadMore(data.loadMore);
-    setPage(nextPage);
-
-    // if (loadMoreBtnRef.current) {
-    //   loadMoreBtnRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    // }
-  } catch (error) {
-    setError(true);
-  } finally {
-    setLoading(false);
-  }
-}
-
-const openModal = (imageUrl, description) => {
-  setModalImageUrl(imageUrl);
-  setModalDescription(description);
-  setModalOpen(true);
-}
-
-const closeModal = () => {
-  setModalOpen(false);
-  setModalImageUrl("");
-  setModalDescription("");
-}
-
-useEffect(() => {
-  const handleKeyDown = (e) => {
-    if (e.key === "Escape") {
-      closeModal();
+  const handleSearch = async (newTopic) => {
+    setTopic(newTopic);
+    setPage(1);
+    setImages([]);
+    setError(false);
+    setLoading(true);
+    try {
+      const data = await fetchImagesWithTopic(newTopic, 1);
+      setImages(data.images);
+      setLoadMore(data.loadMore);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
     }
   };
-  document.addEventListener("keydown", handleKeyDown);
 
-  return () => {
-    document.removeEventListener("keydown", handleKeyDown);
+  const loadMoreImages = async () => {
+    if (!loadMore) return;
+
+    setLoading(true);
+    try {
+      const nextPage = page + 1;
+      const data = await fetchImagesWithTopic(topic, nextPage);
+      setImages((prevImages) => [...prevImages, ...data.images]);
+      setLoadMore(data.loadMore);
+      setPage(nextPage);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   };
-}, [closeModal]);
 
-// useEffect(() => {
-//   if (images.length > 0 && loadMoreBtnRef.current) {
-//     loadMoreBtnRef.current.scrollIntoView({
-//       behavior: "smooth",
-//       block: "start",
-//     });
-//   }
-// }, [images]);
+  const openModal = (image) => {
+    setModalImage(image);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalImage(null);
+  };
+
+  useEffect(() => {
+    if (page <= 1) return;
+
+    const liEl = galleryRef.current?.firstElementChild;
+    if (!liEl) return;
+    const { height } = liEl.getBoundingClientRect();
+
+    window.scrollBy({
+      top: height * 2,
+      behavior: "smooth",
+    });
+  }, [images]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeModal]);
 
   return (
     <div className={style.section}>
       <SearchBar onSubmit={handleSearch} />
-      {loading && <Loader />}
+      <Toaster position="top-right" />
       {error && <ErrorMessage />}
-      {images.length > 0 && <ImageGallery items={images} openModal={openModal} />}
-      {loadMore && !loading && <LoadMoreBtn ref={loadMoreBtnRef} onClick={loadMoreImages} />}
-      {modalOpen && <ImageModal isOpen={openModal} onClose={closeModal} imageUrl={modalImageUrl} description={modalDescription} />}
+      {images.length > 0 && (
+        <div ref={galleryRef}>
+          <ImageGallery items={images} openModal={openModal} />
+        </div>
+      )}
+      {loadMore && !loading && <LoadMoreBtn onClick={loadMoreImages} />}
+      {loading && <Loader />}
+      {modalOpen && (
+        <ImageModal
+          isOpen={modalOpen}
+          onClose={closeModal}
+          image={modalImage}
+        />
+      )}
     </div>
   );
 };

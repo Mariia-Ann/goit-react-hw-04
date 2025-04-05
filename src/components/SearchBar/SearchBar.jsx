@@ -1,14 +1,15 @@
 import style from "./SearchBar.module.css";
 import { IoIosSearch } from "react-icons/io";
+import { toast } from "react-hot-toast";
 
 const SearchBar = ({ onSubmit }) => {
   const handleSubmit = (evt) => {
     evt.preventDefault();
     const form = evt.target;
-    const topic = form.elements.topic.value;
+    const topic = form.elements.topic.value.trim();
 
-    if (form.elements.topic.value.trim() === "") {
-      alert("Please enter search term!");
+    if (topic === "") {
+      toast.error("Please enter search term!");
       return;
     }
     onSubmit(topic);
